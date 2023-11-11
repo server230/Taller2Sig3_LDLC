@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title>TALLER2_LEAFLET</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet.wms.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="data/salud_6.js"></script>
+        <script src="data/esd_deportivos_7.js"></script>
+        <script src="data/educacion_8.js"></script>
+        <script src="data/centros_religioso_9.js"></script>
+        <script src="data/rutas_centros_deportivos_10.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+            highlightLayer.openPopup();
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[3.4572176811577413,-76.51475844614218],[3.486895450835927,-76.47391656140043]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+            map.setMaxBounds(map.getBounds());
+        }
+        map.createPane('pane_OpenStreetMap_0');
+        map.getPane('pane_OpenStreetMap_0').style.zIndex = 400;
+        var layer_OpenStreetMap_0 = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            pane: 'pane_OpenStreetMap_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 19
+        });
+        layer_OpenStreetMap_0;
+        map.addLayer(layer_OpenStreetMap_0);
+        map.createPane('pane_comuna_5_1');
+        map.getPane('pane_comuna_5_1').style.zIndex = 401;
+        var layer_comuna_5_1 = L.WMS.layer("http://44.216.83.120:8080/geoserver/taller2_ldlc/wms", "comuna_5", {
+            pane: 'pane_comuna_5_1',
+            format: 'image/png',
+            uppercase: true,
+            transparent: true,
+            continuousWorld : true,
+            tiled: true,
+            info_format: 'text/html',
+            opacity: 1,
+            identify: false,
+            attribution: '',
+        });
+        map.addLayer(layer_comuna_5_1);
+        map.createPane('pane_barrios_2');
+        map.getPane('pane_barrios_2').style.zIndex = 402;
+        var layer_barrios_2 = L.WMS.layer("http://44.216.83.120:8080/geoserver/taller2_ldlc/wms", "barrios", {
+            pane: 'pane_barrios_2',
+            format: 'image/png',
+            uppercase: true,
+            transparent: true,
+            continuousWorld : true,
+            tiled: true,
+            info_format: 'text/html',
+            opacity: 1,
+            identify: false,
+            attribution: '',
+        });
+        map.addLayer(layer_barrios_2);
+        map.createPane('pane_curvas_nivel_3');
+        map.getPane('pane_curvas_nivel_3').style.zIndex = 403;
+        var layer_curvas_nivel_3 = L.WMS.layer("http://44.216.83.120:8080/geoserver/taller2_ldlc/wms", "curvas_nivel", {
+            pane: 'pane_curvas_nivel_3',
+            format: 'image/png',
+            uppercase: true,
+            transparent: true,
+            continuousWorld : true,
+            tiled: true,
+            info_format: 'text/html',
+            opacity: 1,
+            identify: false,
+            attribution: '',
+        });
+        map.addLayer(layer_curvas_nivel_3);
+        map.createPane('pane_vias_principales_4');
+        map.getPane('pane_vias_principales_4').style.zIndex = 404;
+        var layer_vias_principales_4 = L.WMS.layer("http://44.216.83.120:8080/geoserver/taller2_ldlc/wms", "vias_principales", {
+            pane: 'pane_vias_principales_4',
+            format: 'image/png',
+            uppercase: true,
+            transparent: true,
+            continuousWorld : true,
+            tiled: true,
+            info_format: 'text/html',
+            opacity: 1,
+            identify: false,
+            attribution: '',
+        });
+        map.addLayer(layer_vias_principales_4);
+        map.createPane('pane_manzana_5');
+        map.getPane('pane_manzana_5').style.zIndex = 405;
+        var layer_manzana_5 = L.WMS.layer("http://44.216.83.120:8080/geoserver/taller2_ldlc/wms", "manzana", {
+            pane: 'pane_manzana_5',
+            format: 'image/png',
+            uppercase: true,
+            transparent: true,
+            continuousWorld : true,
+            tiled: true,
+            info_format: 'text/html',
+            opacity: 1,
+            identify: false,
+            attribution: '',
+        });
+        map.addLayer(layer_manzana_5);
+        function pop_salud_6(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">nombre</th>\
+                        <td>' + (feature.properties['nombre'] !== null ? autolinker.link(feature.properties['nombre'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">localizaci</th>\
+                        <td>' + (feature.properties['localizaci'] !== null ? autolinker.link(feature.properties['localizaci'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">servicio</th>\
+                        <td>' + (feature.properties['servicio'] !== null ? autolinker.link(feature.properties['servicio'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">nivel</th>\
+                        <td>' + (feature.properties['nivel'] !== null ? autolinker.link(feature.properties['nivel'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">propiedad</th>\
+                        <td>' + (feature.properties['propiedad'] !== null ? autolinker.link(feature.properties['propiedad'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">tipos_de_e</th>\
+                        <td>' + (feature.properties['tipos_de_e'] !== null ? autolinker.link(feature.properties['tipos_de_e'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">categoria</th>\
+                        <td>' + (feature.properties['categoria'] !== null ? autolinker.link(feature.properties['categoria'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">escala</th>\
+                        <td>' + (feature.properties['escala'] !== null ? autolinker.link(feature.properties['escala'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">permanenci</th>\
+                        <td>' + (feature.properties['permanenci'] !== null ? autolinker.link(feature.properties['permanenci'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">estruc_eco</th>\
+                        <td>' + (feature.properties['estruc_eco'] !== null ? autolinker.link(feature.properties['estruc_eco'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">url1</th>\
+                        <td>' + (feature.properties['url1'] !== null ? autolinker.link(feature.properties['url1'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_salud_6_0() {
+            return {
+                pane: 'pane_salud_6',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(200,49,117,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_salud_6');
+        map.getPane('pane_salud_6').style.zIndex = 406;
+        map.getPane('pane_salud_6').style['mix-blend-mode'] = 'normal';
+        var layer_salud_6 = new L.geoJson(json_salud_6, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_salud_6',
+            layerName: 'layer_salud_6',
+            pane: 'pane_salud_6',
+            onEachFeature: pop_salud_6,
+            style: style_salud_6_0,
+        });
+        bounds_group.addLayer(layer_salud_6);
+        map.addLayer(layer_salud_6);
+
+
+        var geojsonFeature = {
+    "type":"FeatureCollection",
+    "name":"esd_deportivos_7",
+    "crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},
+    "features":[{"type":"Feature","properties":{"id":984.0,"nombre":"minifutbol barrio metropolitan","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img226.jpg"},"geometry":{"type":"Point","coordinates":[-76.49004176369408,3.478689916453877]}},{"type":"Feature","properties":{"id":985.0,"nombre":"cancha multiple barrio metropolitano","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img227.jpg"},"geometry":{"type":"Point","coordinates":[-76.489777530361209,3.478373061910254]}},{"type":"Feature","properties":{"id":986.0,"nombre":"futbol barrio chiminangos 1","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img228.jpg"},"geometry":{"type":"Point","coordinates":[-76.490196590966548,3.477816208883233]}},{"type":"Feature","properties":{"id":987.0,"nombre":"baloncesto barrio metropolitano","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img229.jpg"},"geometry":{"type":"Point","coordinates":[-76.490539954602184,3.480107001294073]}},{"type":"Feature","properties":{"id":988.0,"nombre":"cancha multiple barrio chiminangos 1","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img230.jpg"},"geometry":{"type":"Point","coordinates":[-76.490158448542374,3.477218896765476]}},{"type":"Feature","properties":{"id":989.0,"nombre":"baloncesto barrio chiminangos","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img231.jpg"},"geometry":{"type":"Point","coordinates":[-76.492356462174556,3.479988596749331]}},{"type":"Feature","properties":{"id":990.0,"nombre":"baloncesto barrio los almendros","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img232.jpg"},"geometry":{"type":"Point","coordinates":[-76.492420857629014,3.470252511957527]}},{"type":"Feature","properties":{"id":991.0,"nombre":"pista de patinaje barrio los a","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img233.jpg"},"geometry":{"type":"Point","coordinates":[-76.492245257629307,3.469935377110869]}},{"type":"Feature","properties":{"id":992.0,"nombre":"micro tierra barrio los almendros","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img234.jpg"},"geometry":{"type":"Point","coordinates":[-76.492874137931167,3.470088278625142]}},{"type":"Feature","properties":{"id":993.0,"nombre":"pista de trote barrio los alme","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img235.jpg"},"geometry":{"type":"Point","coordinates":[-76.493036019749027,3.470449292259432]}},{"type":"Feature","properties":{"id":994.0,"nombre":"baloncesto barrio los almendros","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img236.jpg"},"geometry":{"type":"Point","coordinates":[-76.493511095505681,3.470401581653594]}},{"type":"Feature","properties":{"id":995.0,"nombre":"futbol barrio guayacanes","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img237.jpg"},"geometry":{"type":"Point","coordinates":[-76.488193634909678,3.471816018009014]}},{"type":"Feature","properties":{"id":996.0,"nombre":"voleibol barrio guayacanes","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img238.jpg"},"geometry":{"type":"Point","coordinates":[-76.488000739455501,3.471216345285268]}},{"type":"Feature","properties":{"id":997.0,"nombre":"baloncesto barrio guayacanes","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img239.jpg"},"geometry":{"type":"Point","coordinates":[-76.488202068243055,3.471149125588659]}},{"type":"Feature","properties":{"id":998.0,"nombre":"pista de trote barrio guayacan","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img240.jpg"},"geometry":{"type":"Point","coordinates":[-76.488106398546208,3.471194258921757]}},{"type":"Feature","properties":{"id":999.0,"nombre":"cancha multiple ie mariano ospina perez","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img241.jpg"},"geometry":{"type":"Point","coordinates":[-76.489009897029348,3.472729395276442]}},{"type":"Feature","properties":{"id":1000.0,"nombre":"futbol barrio guavito","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img242.jpg"},"geometry":{"type":"Point","coordinates":[-76.488195840970278,3.464999215018253]}},{"type":"Feature","properties":{"id":1001.0,"nombre":"micro pasto barrio brisas del","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img243.jpg"},"geometry":{"type":"Point","coordinates":[-76.488170418243044,3.46467452259592]}},{"type":"Feature","properties":{"id":1002.0,"nombre":"cancha multiple barrio brisas del guabito","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img244.jpg"},"geometry":{"type":"Point","coordinates":[-76.487820166728611,3.464831102898088]}},{"type":"Feature","properties":{"id":1003.0,"nombre":"cancha multiple barrio villa del prado","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img245.jpg"},"geometry":{"type":"Point","coordinates":[-76.492100657629535,3.466463572585591]}},{"type":"Feature","properties":{"id":1004.0,"nombre":"baloncesto barrio villa del prado","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img246.jpg"},"geometry":{"type":"Point","coordinates":[-76.49379935762633,3.465782072589479]}},{"type":"Feature","properties":{"id":1005.0,"nombre":"cancha multiple barrio villa del prado","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img247.jpg"},"geometry":{"type":"Point","coordinates":[-76.494098165201592,3.466808099856255]}},{"type":"Feature","properties":{"id":1006.0,"nombre":"cancha multiple barrio villa del prado","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img248.jpg"},"geometry":{"type":"Point","coordinates":[-76.49498923944229,3.467277052883863]}},{"type":"Feature","properties":{"id":1007.0,"nombre":"minifutbol barrio villa del prado","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img249.jpg"},"geometry":{"type":"Point","coordinates":[-76.494548254594633,3.467381734701496]}},{"type":"Feature","properties":{"id":1008.0,"nombre":"micro barrio villa del prado","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img250.jpg"},"geometry":{"type":"Point","coordinates":[-76.495940975804118,3.466917936219255]}},{"type":"Feature","properties":{"id":1009.0,"nombre":"baloncesto barrio villa del prado","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img251.jpg"},"geometry":{"type":"Point","coordinates":[-76.49578606368317,3.466959683188767]}},{"type":"Feature","properties":{"id":1010.0,"nombre":"pista de trote barrio villa de","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img252.jpg"},"geometry":{"type":"Point","coordinates":[-76.495778725804456,3.466957119552365]}},{"type":"Feature","properties":{"id":1011.0,"nombre":"tenis barrio villa del prado","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img253.jpg"},"geometry":{"type":"Point","coordinates":[-76.495702290956103,3.466994271067364]}},{"type":"Feature","properties":{"id":1012.0,"nombre":"gimnasio sena","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img254.jpg"},"geometry":{"type":"Point","coordinates":[-76.49940844246423,3.46762825439697]}},{"type":"Feature","properties":{"id":1013.0,"nombre":"futbol 1 sena","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img255.jpg"},"geometry":{"type":"Point","coordinates":[-76.498718577314051,3.46724481500528]}},{"type":"Feature","properties":{"id":1014.0,"nombre":"pista de atletismo sena","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img257.jpg"},"geometry":{"type":"Point","coordinates":[-76.498728095495849,3.467249881671926]}},{"type":"Feature","properties":{"id":1015.0,"nombre":"futbol 2 sena","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img258.jpg"},"geometry":{"type":"Point","coordinates":[-76.499358507615824,3.467025481673256]}},{"type":"Feature","properties":{"id":1016.0,"nombre":"cancha multiple sena","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img259.jpg"},"geometry":{"type":"Point","coordinates":[-76.499711766706113,3.466750361977817]}},{"type":"Feature","properties":{"id":1017.0,"nombre":"baloncesto sena","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img260.jpg"},"geometry":{"type":"Point","coordinates":[-76.499865001554255,3.466703883190192]}},{"type":"Feature","properties":{"id":1018.0,"nombre":"cancha multiple torres de comfacundi","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img261.jpg"},"geometry":{"type":"Point","coordinates":[-76.499367027312843,3.473558822544355]}},{"type":"Feature","properties":{"id":1019.0,"nombre":"futbol torres de comfandi","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img262.jpg"},"geometry":{"type":"Point","coordinates":[-76.498590189435518,3.473950339208729]}},{"type":"Feature","properties":{"id":1020.0,"nombre":"cancha multiple 1 torres de comfandi","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img263.jpg"},"geometry":{"type":"Point","coordinates":[-76.499167534888926,3.474391755872829]}},{"type":"Feature","properties":{"id":1021.0,"nombre":"cancha multiple 2 torres de comfandi","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img264.jpg"},"geometry":{"type":"Point","coordinates":[-76.49951609852468,3.474299848297598]}},{"type":"Feature","properties":{"id":962.0,"nombre":"futbol barrio chiminangos","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img204.jpg"},"geometry":{"type":"Point","coordinates":[-76.495348147017395,3.478974640694666]}},{"type":"Feature","properties":{"id":963.0,"nombre":"pista de trote barrio chiminan","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img205.jpg"},"geometry":{"type":"Point","coordinates":[-76.495344806108264,3.478979527058284]}},{"type":"Feature","properties":{"id":964.0,"nombre":"baloncesto barrio chiminangos","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img206.jpg"},"geometry":{"type":"Point","coordinates":[-76.495026653078554,3.479275234632269]}},{"type":"Feature","properties":{"id":965.0,"nombre":"cancha multiple barrio barranquilla","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img207.jpg"},"geometry":{"type":"Point","coordinates":[-76.494086716716723,3.47594436495471]}},{"type":"Feature","properties":{"id":966.0,"nombre":"micro barrio chiminangos 2","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img208.jpg"},"geometry":{"type":"Point","coordinates":[-76.49422066065587,3.477761883125935]}},{"type":"Feature","properties":{"id":967.0,"nombre":"tenis unidad recreativa barran","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img209.jpg"},"geometry":{"type":"Point","coordinates":[-76.497392645498408,3.477182045250554]}},{"type":"Feature","properties":{"id":968.0,"nombre":"fronton tenis unidad recreativ","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img210.jpg"},"geometry":{"type":"Point","coordinates":[-76.497552577316242,3.477326151310284]}},{"type":"Feature","properties":{"id":969.0,"nombre":"micro sintetica unidad recreativa","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img211.jpg"},"geometry":{"type":"Point","coordinates":[-76.497392243983185,3.477418471006727]}},{"type":"Feature","properties":{"id":970.0,"nombre":"micro sintetica 2 unidad recre","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img212.jpg"},"geometry":{"type":"Point","coordinates":[-76.497277959134919,3.477538180096992]}},{"type":"Feature","properties":{"id":971.0,"nombre":"futbol unidad recreativa barra","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img213.jpg"},"geometry":{"type":"Point","coordinates":[-76.497604681861617,3.477860004337465]}},{"type":"Feature","properties":{"id":972.0,"nombre":"cancha multiple unidad recreativa barranqu","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img214.jpg"},"geometry":{"type":"Point","coordinates":[-76.497014428832387,3.477728702823103]}},{"type":"Feature","properties":{"id":973.0,"nombre":"cancha multiple 2 unidad recreativa barranquilla","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img215.jpg"},"geometry":{"type":"Point","coordinates":[-76.496904724287162,3.477632436157029]}},{"type":"Feature","properties":{"id":974.0,"nombre":"piscina unidad recreativa barr","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img216.jpg"},"geometry":{"type":"Point","coordinates":[-76.49664006065133,3.477401269491684]}},{"type":"Feature","properties":{"id":975.0,"nombre":"micro parque recreativo v s","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img217.jpg"},"geometry":{"type":"Point","coordinates":[-76.494803016715338,3.480584752806486]}},{"type":"Feature","properties":{"id":976.0,"nombre":"baloncesto parque recreativo v","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img218.jpg"},"geometry":{"type":"Point","coordinates":[-76.494987592472626,3.480770237653866]}},{"type":"Feature","properties":{"id":977.0,"nombre":"pista de trote parque recreati","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img219.jpg"},"geometry":{"type":"Point","coordinates":[-76.495146733381389,3.480455936140524]}},{"type":"Feature","properties":{"id":978.0,"nombre":"baloncesto barrio metropolitano","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img220.jpg"},"geometry":{"type":"Point","coordinates":[-76.494869113684942,3.482645266430773]}},{"type":"Feature","properties":{"id":979.0,"nombre":"piscina unidad recreativa plaz","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img221.jpg"},"geometry":{"type":"Point","coordinates":[-76.490643275814207,3.479610358872778]}},{"type":"Feature","properties":{"id":980.0,"nombre":"cancha multiple unidad recreativa plazas v","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img222.jpg"},"geometry":{"type":"Point","coordinates":[-76.490270981875412,3.479267007359604]}},{"type":"Feature","properties":{"id":981.0,"nombre":"micro tierra unidad recreativa","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img223.jpg"},"geometry":{"type":"Point","coordinates":[-76.490477369753847,3.479184963420656]}},{"type":"Feature","properties":{"id":982.0,"nombre":"voleibol playa unidad recreati","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img224.jpg"},"geometry":{"type":"Point","coordinates":[-76.490613607632383,3.479200413420618]}},{"type":"Feature","properties":{"id":983.0,"nombre":"tenis unidad recreativa plazas","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_02/img225.jpg"},"geometry":{"type":"Point","coordinates":[-76.490804509147168,3.479262517965708]}},{"type":"Feature","properties":{"id":340.0,"nombre":"multiple cr san luis","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_03/img095.jpg"},"geometry":{"type":"Point","coordinates":[-76.489409734907397,3.481373461892761]}},{"type":"Feature","properties":{"id":341.0,"nombre":"multiple barrio san luis","url":"http://idesc.cali.gov.co/download/escenarios_deportivos/directorio_03/img096.jpg"},"geometry":{"type":"Point","coordinates":[-76.489505531876944,3.48170256340598]}}]};
+
+        function style_esd_deportivos_7_0() {
+            return {
+                pane: 'pane_esd_deportivos_7',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(105,172,34,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_esd_deportivos_7');
+        map.getPane('pane_esd_deportivos_7').style.zIndex = 409;
+        var layer_esd_deportivos_7 = new L.geoJson(geojsonFeature,{
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_esd_deportivos_7',
+            layerName: 'layer_esd_deportivos_7',
+            pane: 'pane_esd_deportivos_7',
+            style: style_esd_deportivos_7_0,
+        });
+        bounds_group.addLayer(layer_esd_deportivos_7);
+        map.addLayer(layer_esd_deportivos_7);
+
+        function pop_educacion_8(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">comuna</th>\
+                        <td>' + (feature.properties['comuna'] !== null ? autolinker.link(feature.properties['comuna'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">localizacion</th>\
+                        <td>' + (feature.properties['localizacion'] !== null ? autolinker.link(feature.properties['localizacion'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">tipo</th>\
+                        <td>' + (feature.properties['tipo'] !== null ? autolinker.link(feature.properties['tipo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">barrio</th>\
+                        <td>' + (feature.properties['barrio'] !== null ? autolinker.link(feature.properties['barrio'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">propiedad</th>\
+                        <td>' + (feature.properties['propiedad'] !== null ? autolinker.link(feature.properties['propiedad'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">escala</th>\
+                        <td>' + (feature.properties['escala'] !== null ? autolinker.link(feature.properties['escala'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_educacion_8_0() {
+            return {
+                pane: 'pane_educacion_8',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(245,121,27,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_educacion_8');
+        map.getPane('pane_educacion_8').style.zIndex = 408;
+        map.getPane('pane_educacion_8').style['mix-blend-mode'] = 'normal';
+        var layer_educacion_8 = new L.geoJson(json_educacion_8, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_educacion_8',
+            layerName: 'layer_esd_deportivos_8',
+            pane: 'pane_educacion_8',
+            style: style_educacion_8_0,
+        });
+        bounds_group.addLayer(layer_educacion_8);
+        map.addLayer(layer_educacion_8);
+        
+        function pop_centros_religioso_9(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">nombre</th>\
+                        <td>' + (feature.properties['nombre'] !== null ? autolinker.link(feature.properties['nombre'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">comuna</th>\
+                        <td>' + (feature.properties['comuna'] !== null ? autolinker.link(feature.properties['comuna'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">barrio</th>\
+                        <td>' + (feature.properties['barrio'] !== null ? autolinker.link(feature.properties['barrio'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">localizacion</th>\
+                        <td>' + (feature.properties['localizacion'] !== null ? autolinker.link(feature.properties['localizacion'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">tipo</th>\
+                        <td>' + (feature.properties['tipo'] !== null ? autolinker.link(feature.properties['tipo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_centros_religioso_9_0() {
+            return {
+                pane: 'pane_centros_religioso_9',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(182,86,71,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_centros_religioso_9');
+        map.getPane('pane_centros_religioso_9').style.zIndex = 409;
+        map.getPane('pane_centros_religioso_9').style['mix-blend-mode'] = 'normal';
+        var layer_centros_religioso_9 = new L.geoJson(json_centros_religioso_9, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_centros_religioso_9',
+            layerName: 'layer_centros_religioso_9',
+            pane: 'pane_centros_religioso_9',
+            onEachFeature: pop_centros_religioso_9,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_centros_religioso_9_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_centros_religioso_9);
+        map.addLayer(layer_centros_religioso_9);
+        function pop_rutas_centros_deportivos_10(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">comuna</th>\
+                        <td>' + (feature.properties['comuna'] !== null ? autolinker.link(feature.properties['comuna'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">barrio</th>\
+                        <td>' + (feature.properties['barrio'] !== null ? autolinker.link(feature.properties['barrio'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">tipo</th>\
+                        <td>' + (feature.properties['tipo'] !== null ? autolinker.link(feature.properties['tipo'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">punto_inicial</th>\
+                        <td>' + (feature.properties['punto_inicial'] !== null ? autolinker.link(feature.properties['punto_inicial'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">punto_final</th>\
+                        <td>' + (feature.properties['punto_final'] !== null ? autolinker.link(feature.properties['punto_final'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">zona</th>\
+                        <td>' + (feature.properties['zona'] !== null ? autolinker.link(feature.properties['zona'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_rutas_centros_deportivos_10_0() {
+            return {
+                pane: 'pane_rutas_centros_deportivos_10',
+                opacity: 1,
+                color: 'rgba(255,233,33,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_rutas_centros_deportivos_10');
+        map.getPane('pane_rutas_centros_deportivos_10').style.zIndex = 410;
+        map.getPane('pane_rutas_centros_deportivos_10').style['mix-blend-mode'] = 'normal';
+        var layer_rutas_centros_deportivos_10 = new L.geoJson(json_rutas_centros_deportivos_10, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_rutas_centros_deportivos_10',
+            layerName: 'layer_rutas_centros_deportivos_10',
+            pane: 'pane_rutas_centros_deportivos_10',
+            onEachFeature: pop_rutas_centros_deportivos_10,
+            style: style_rutas_centros_deportivos_10_0,
+        });
+        bounds_group.addLayer(layer_rutas_centros_deportivos_10);
+        map.addLayer(layer_rutas_centros_deportivos_10);
+            var title = new L.Control();
+            title.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info');
+                this.update();
+                return this._div;
+            };
+            title.update = function () {
+                this._div.innerHTML = '<h2>TALLER2_LEAFLET</h2>';
+            };
+            title.addTo(map);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'<img src="legend/rutas_centros_deportivos_10.png" /> rutas_centros_deportivos': layer_rutas_centros_deportivos_10,'<img src="legend/centros_religioso_9.png" /> centros_religioso': layer_centros_religioso_9,'<img src="legend/educacion_8.png" /> educacion': layer_educacion_8,"Escenarios depor":layer_esd_deportivos_7,'<img src="legend/salud_6.png" /> salud': layer_salud_6,"manzana": layer_manzana_5,"vias_principales": layer_vias_principales_4,"curvas_nivel": layer_curvas_nivel_3,"barrios": layer_barrios_2,"comuna_5": layer_comuna_5_1,"OpenStreetMap": layer_OpenStreetMap_0,}).addTo(map);
+        setBounds();
+        </script>
+    </body>
+</html>
